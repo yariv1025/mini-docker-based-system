@@ -48,9 +48,6 @@ services:
 
   message_broker:
     image: 'rabbitmq:3.6-management-alpine'
-    # # - #TODO
-    # volumes:
-    # #  - #TODO
     ports:
       # The standard AMQP protocol port
       - '5672:5672'
@@ -66,3 +63,5 @@ networks:
   password_module_network:
     external: true
 
+#volumes:
+#  - #TODO
