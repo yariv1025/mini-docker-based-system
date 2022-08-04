@@ -15,3 +15,16 @@ Each module run in a docker container of its own, and all containers runs using 
 NOTE:
 * There is no communication between the analyze and password modules. They are in different networks.
 * The folders to analyze available in the containers by volumes.
+
+
+### How to run the services:
+   - Clone the project
+   - Build all containers with the command:
+```
+sh build_all_docker_images.sh
+```
+
+   - Run docker compose:
+```
+docker compose up
+```
