@@ -44,9 +44,9 @@ def to_json_file(new_data):
         data["analyze_module"] = new_data
 
     with open(JSON_PATH, 'w') as fp:
-        json.dump(data, fp)
+        json.dump(data, fp, indent=4, sort_keys=True)
 
-    logger.info(f"Current json file: {json.dump(data)}")
+    logger.info(f"Current json file: {data}")
 
 
 def consume_callback(channel, method, properties, body):
@@ -79,7 +79,7 @@ def initialize_json_file():
     }
 
     with open(JSON_PATH, 'w') as fp:
-        json.dump(json_body, fp)
+        json.dump(json_body, fp, indent=4, sort_keys=True)
 
 
 if __name__ == '__main__':
