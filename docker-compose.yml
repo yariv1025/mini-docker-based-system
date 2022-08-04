@@ -1,0 +1,68 @@
+version: "3.3"
+
+services:
+
+  analyze_module:
+    image: analyze_module:latest
+    restart: always
+    environment:
+      rabbitmq_host: message_broker
+      rabbitmq_port: "5672"
+      AMQP_URL: 'amqp://message_broker?connection_attempts=5&retry_delay=5'
+    volumes:
+      - ./services:/services
+      - ./theHarvester:/theHarvester
+    networks:
+      - analyze_module_network
+    depends_on:
+      - message_broker
+
+  password_module:
+    image: password_module:latest
+    restart: always
+    environment:
+      rabbitmq_host: message_broker
+      rabbitmq_port: "5672"
+      AMQP_URL: 'amqp://message_broker?connection_attempts=5&retry_delay=5'
+    volumes:
+      - ./services:/services
+      - ./theHarvester:/theHarvester
+    networks:
+      - password_module_network
+    depends_on:
+      - message_broker
+
+  controller_module:
+    image: controller_module:latest
+    restart: always
+    environment:
+      rabbitmq_host: message_broker
+      rabbitmq_port: "5672"
+      AMQP_URL: 'amqp://message_broker?connection_attempts=5&retry_delay=5'
+    networks:
+      - analyze_module_network
+      - password_module_network
+    depends_on:
+      - message_broker
+
+
+  message_broker:
+    image: 'rabbitmq:3.6-management-alpine'
+    # # - #TODO
+    # volumes:
+    # #  - #TODO
+    ports:
+      # The standard AMQP protocol port
+      - '5672:5672'
+      # HTTP management UI
+      - '15672:15672'
+    networks:
+      - analyze_module_network
+      - password_module_network
+
+networks:
+  analyze_module_network:
+    external: true
+  password_module_network:
+    external: true
+
