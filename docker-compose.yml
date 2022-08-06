@@ -39,6 +39,8 @@ services:
       rabbitmq_host: message_broker
       rabbitmq_port: "5672"
       AMQP_URL: 'amqp://message_broker?connection_attempts=5&retry_delay=5'
+    volumes:
+      - ./controller_module/output:/output
     networks:
       - analyze_module_network
       - password_module_network
@@ -57,11 +59,9 @@ services:
       - analyze_module_network
       - password_module_network
 
+
 networks:
   analyze_module_network:
     external: true
   password_module_network:
     external: true
-
-#volumes:
-#  - #TODO

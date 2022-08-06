@@ -1,10 +1,17 @@
+import logging
+import time
+
 import pika
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class MessageBroker:
 
     def __init__(self, config):
         self.config = config
+        self.connection = None
 
     def create_connection(self):
         """
@@ -15,7 +22,30 @@ class MessageBroker:
         A new instance of the connection object
         """
         param = pika.ConnectionParameters(host=self.config['host'], port=self.config['port'])
-        return pika.BlockingConnection(param)
+        self.connection = pika.BlockingConnection(param)
+        return self.connection
+
+    def __del__(self):
+        """
+        Close the connection to the server
+        """
+        if self.connection:
+            self.connection.close()
+
+    def health_check_rabbitmq(self):
+        """
+        Checking for connection
+        """
+        while True:
+            try:
+                connection = self.create_connection()
+                connection.close()
+                break
+
+            except Exception as e:
+                logger.info(f"Rabbitmq is not up and running.")
+                time.sleep(1)
+                continue
 
 
 class Publisher(MessageBroker):
@@ -31,7 +61,7 @@ class Publisher(MessageBroker):
         routing_key: routing key
         message: the message we want to publish
         """
-        connection = super().create_connection()
+        connection = self.connection
         channel = connection.channel()
 
         # Creates an exchange
@@ -48,13 +78,6 @@ class Subscriber(MessageBroker):
         super().__init__(config)
         self.queue_name = queue_name
         self.binding_key = binding_key
-        self.connection = super().create_connection()
-
-    def __del__(self):
-        """
-        Close the connection to the server
-        """
-        self.connection.close()
 
     def on_message_callback(self, channel, method, properties, body):
         """
