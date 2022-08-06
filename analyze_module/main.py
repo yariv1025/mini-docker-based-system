@@ -1,9 +1,13 @@
 import json
 import logging
 import os
+import time
 
 import messageBroker
+
 from services.scanner_service import ScannerService
+
+DELAY = 10
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -39,12 +43,17 @@ def on_message_callback(channel, method, properties, body):
 
     # produce a new message
     publisher = messageBroker.Publisher(config)
+    publisher.health_check_rabbitmq()
+    publisher.create_connection()
+
     message = json.dumps({"files_types": find_top_10_files(search_path)})
     publisher.publish(controller_config["routing_key"], message)
 
 
 if __name__ == '__main__':
     logger.info("Analyze module is listening...")
+
+    # time.sleep(DELAY)
 
     # Configuration:
     search_path = "../theHarvester"
@@ -53,4 +62,7 @@ if __name__ == '__main__':
 
     # Creating a subscriber for consuming a messages
     analyze_mod_subscriber = messageBroker.Subscriber(analyze_module_config["queue_name"], analyze_module_config["routing_key"], config)
+    analyze_mod_subscriber.health_check_rabbitmq()
+    analyze_mod_subscriber.create_connection()
+
     analyze_mod_subscriber.setup(callback=on_message_callback)

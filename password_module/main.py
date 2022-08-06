@@ -1,10 +1,13 @@
 import json
 import logging
 import os
+import time
 
 import messageBroker
 
 from services.scanner_service import ScannerService
+
+DELAY = 10
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -38,6 +41,9 @@ def on_message_callback(channel, method, properties, body):
 
     # produce a new message
     publisher = messageBroker.Publisher(config)
+    publisher.health_check_rabbitmq()
+    publisher.create_connection()
+
     message = json.dumps({"password": extract_password(search_str, search_path)})
     publisher.publish(controller_config["routing_key"], message)
 
@@ -52,5 +58,10 @@ if __name__ == '__main__':
     password_module_config = {"queue_name": "password_mod_q", "routing_key": "password_mod_q"}
 
     # Creating a subscriber for consuming a messages
-    password_mod_subscriber = messageBroker.Subscriber(password_module_config["queue_name"], password_module_config["routing_key"], config)
+    password_mod_subscriber = messageBroker.Subscriber(password_module_config["queue_name"],
+                                                       password_module_config["routing_key"], config)
+
+    password_mod_subscriber.health_check_rabbitmq()
+    password_mod_subscriber.create_connection()
+
     password_mod_subscriber.setup(callback=on_message_callback)
