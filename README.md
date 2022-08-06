@@ -19,12 +19,14 @@ NOTE:
 
 ### How to run the services:
    - Clone the project
-   - Build all containers with the command:
-```
-sh build_all_docker_images.sh
-```
+   - By writing the command below in the terminal we will:
+     - create the networks for the modules(password and analyze)
+     - build the containers image:
+     ```
+      sh initialize_script.sh
+     ```
 
-   - Run docker compose:
-```
-docker compose up
-```
+   - Run docker compose using the command:
+      ```
+      docker compose up
+      ```
