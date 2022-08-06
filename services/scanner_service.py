@@ -55,7 +55,7 @@ class ScannerService:
                 ext_types[os.path.splitext(file_name)[1]] += 1
 
         sorted_tuples = sorted(ext_types.items(), key=operator.itemgetter(1), reverse=True)
-        return dict(sorted_tuples)
+        return dict(item for item in sorted_tuples if item)
 
     @staticmethod
     def find_string(target_string: str, path: str) -> list:
