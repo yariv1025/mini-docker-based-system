@@ -1,0 +1,11 @@
+{
+  "rabbitmq": {
+    "host": "message_broker",
+    "port": 5672,
+    "exchange": "exchange",
+    "credentials": {
+      "username": "rabbit",
+      "password": "rabbit"
+    }
+  }
+}

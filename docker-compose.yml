@@ -4,57 +4,57 @@ services:
 
   analyze_module:
     image: analyze_module:latest
-    restart: always
     environment:
-      rabbitmq_host: message_broker
-      rabbitmq_port: "5672"
+#      rabbitmq_host: message_broker
+#      rabbitmq_port: "5672"
       AMQP_URL: 'amqp://message_broker?connection_attempts=5&retry_delay=5'
     volumes:
-      - ./services:/services
-      - ./theHarvester:/theHarvester
+      - ./theHarvester:/app/theHarvester
     networks:
       - analyze_module_network
     depends_on:
       - message_broker
+    restart: on-failure
 
   password_module:
     image: password_module:latest
-    restart: always
     environment:
-      rabbitmq_host: message_broker
-      rabbitmq_port: "5672"
+#      rabbitmq_host: message_broker
+#      rabbitmq_port: "5672"
       AMQP_URL: 'amqp://message_broker?connection_attempts=5&retry_delay=5'
     volumes:
-      - ./services:/services
-      - ./theHarvester:/theHarvester
+      - ./theHarvester:/app/theHarvester
     networks:
       - password_module_network
     depends_on:
       - message_broker
+    restart: on-failure
 
   controller_module:
     image: controller_module:latest
-    restart: always
     environment:
-      rabbitmq_host: message_broker
-      rabbitmq_port: "5672"
+#      rabbitmq_host: message_broker
+#      rabbitmq_port: "5672"
       AMQP_URL: 'amqp://message_broker?connection_attempts=5&retry_delay=5'
     volumes:
-      - ./controller_module/output:/output
+      - ./controller_module/output:/app/controller_module/output
     networks:
       - analyze_module_network
       - password_module_network
     depends_on:
       - message_broker
-
+    restart: on-failure
 
   message_broker:
-    image: 'rabbitmq:3.6-management-alpine'
+    image: 'rabbitmq:3.11-management-alpine'
+    volumes:
+      - rmq:/var/lib/rabbitmq
     ports:
-      # The standard AMQP protocol port
-      - '5672:5672'
-      # HTTP management UI
-      - '15672:15672'
+      - '5672:5672'       # The standard AMQP protocol port
+      - '15672:15672'     # HTTP management UI
+    environment:
+      - RABBITMQ_DEFAULT_USER=rabbit
+      - RABBITMQ_DEFAULT_PASS=rabbit
     networks:
       - analyze_module_network
       - password_module_network
@@ -64,4 +64,8 @@ networks:
   analyze_module_network:
     external: true
   password_module_network:
+    external: true
+
+volumes:
+  rmq:
     external: true

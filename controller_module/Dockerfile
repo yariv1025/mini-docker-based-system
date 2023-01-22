@@ -1,7 +1,10 @@
 FROM python:3.8
-COPY requirements.txt messageBroker.py /
-COPY controller_module/ /
-WORKDIR /
-RUN pip install -r requirements.txt
+WORKDIR /app
 
-ENTRYPOINT ["python","main.py"]
+COPY requirements.txt message_broker.py /app/controller_module/
+RUN pip install -r /app/controller_module/requirements.txt
+
+COPY  configuration/ /app/configuration/
+COPY  controller_module/ /app/controller_module/
+
+ENTRYPOINT ["python","/app/controller_module/main.py"]

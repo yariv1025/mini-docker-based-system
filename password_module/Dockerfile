@@ -1,8 +1,11 @@
 FROM python:3.8
-COPY requirements.txt messageBroker.py /
-COPY password_module/ /
-COPY services/ /
-WORKDIR /
-RUN pip install -r requirements.txt
+WORKDIR /app/
 
-ENTRYPOINT ["python","main.py"]
+COPY requirements.txt message_broker.py /app/password_module/
+RUN pip install -r /app/password_module/requirements.txt
+
+COPY services/ /app/password_module/services/
+COPY  configuration/ /app/configuration/
+COPY password_module/ /app/password_module/
+
+ENTRYPOINT ["python","/app/password_module/main.py"]
