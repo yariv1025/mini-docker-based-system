@@ -5,8 +5,6 @@ services:
   analyze_module:
     image: analyze_module:latest
     environment:
-#      rabbitmq_host: message_broker
-#      rabbitmq_port: "5672"
       AMQP_URL: 'amqp://message_broker?connection_attempts=5&retry_delay=5'
     volumes:
       - ./theHarvester:/app/theHarvester
@@ -19,8 +17,7 @@ services:
   password_module:
     image: password_module:latest
     environment:
-#      rabbitmq_host: message_broker
-#      rabbitmq_port: "5672"
+
       AMQP_URL: 'amqp://message_broker?connection_attempts=5&retry_delay=5'
     volumes:
       - ./theHarvester:/app/theHarvester
@@ -33,8 +30,6 @@ services:
   controller_module:
     image: controller_module:latest
     environment:
-#      rabbitmq_host: message_broker
-#      rabbitmq_port: "5672"
       AMQP_URL: 'amqp://message_broker?connection_attempts=5&retry_delay=5'
     volumes:
       - ./controller_module/output:/app/controller_module/output
@@ -58,6 +53,7 @@ services:
     networks:
       - analyze_module_network
       - password_module_network
+    restart: unless-stopped
 
 
 networks:
