@@ -34,8 +34,7 @@ services:
     volumes:
       - ./controller_module/output:/app/controller_module/output
     networks:
-      - analyze_module_network
-      - password_module_network
+      - controller_module_network
     depends_on:
       - message_broker
     restart: on-failure
@@ -53,6 +52,7 @@ services:
     networks:
       - analyze_module_network
       - password_module_network
+      - controller_module_network
     restart: unless-stopped
 
 
@@ -60,6 +60,8 @@ networks:
   analyze_module_network:
     external: true
   password_module_network:
+    external: true
+  controller_module_network:
     external: true
 
 volumes:
