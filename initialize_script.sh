@@ -3,6 +3,9 @@ docker network create --driver bridge analyze_module_network
 docker network create --driver bridge password_module_network
 docker network create --driver bridge controller_module_network
 
+# Creation Rabbitmq volume
+docker vloume create rmq
+
 # Building the modules images
 docker build -f analyze_module/Dockerfile . -t analyze_module
 docker build -f password_module/Dockerfile . -t password_module
